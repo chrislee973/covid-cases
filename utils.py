@@ -6,16 +6,6 @@ import json
 import streamlit as st
 import plotly.graph_objects as go
 
-# @st.cache(suppress_st_warning=True)
-# def open_json():
-#     st.write('First time cache')
-#     with open("./csv_cache/country_coords.json") as file:
-#         countries = json.load(file)
-#         #return json.loads('./csv_cache/country_json.json')
-#     return countries
-
-# COUNTRY_COORDS = open_json()
-# COUNTRIES_GEOJSON = 'https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/world-countries.json'
 
 
 def start_pipeline(df):

@@ -11,7 +11,6 @@ st.set_page_config(layout="wide")
 
 from utils import *
 
-# COUNTRIES_GEOJSON = 'https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/world-countries.json'
 
 @st.cache
 def read_data():
@@ -26,9 +25,6 @@ def read_data():
 
 df = read_data()
 
-# countries = ['World'] + list(df_pipeline['location'].unique())
-# chosen_country = st.sidebar.selectbox('Which country would you like to view data for?', 
-#                 countries, index=0)
 
 selected_feature = st.sidebar.selectbox('What metric would you like to see?', 
                                     ['New cases','New cases per capita', 'New cases (7 day rolling average)', 'New cases per capita (7 day rolling average)'])
@@ -38,12 +34,6 @@ feature_map = {'New cases': 'new_cases',
                 'New cases (7 day rolling average)': 'new_cases_smoothed', 
                 'New cases per capita (7 day rolling average)': 'new_cases_smoothed_per_million'}
 
-# df_latest = pd.read_csv('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/latest/owid-covid-latest.csv',parse_dates=['last_updated_date'] )
-# df_latest_pipeline = (df_latest
-#                 .pipe(start_pipeline)
-#                 .pipe(dropContinents)
-#                 .pipe(convertCountryLabels)
-#                 )
 
 st.title("Covid-19 Global Cases")
 st.subheader("""A daily-updated interactive dashboard of new cases on a country by country basis. Data sourced from Our World in Data.""")
@@ -91,12 +81,11 @@ def daily_increase(df_pivot, most_recent, day_before_most_recent):
     return percent_increase, absolute_increase
 
 percent_increase, absolute_increase = daily_increase(df_pivot, most_recent, day_before_most_recent)
-# percent_increase = pd.DataFrame(percent_increase, columns=['% increase'])
-# absolute_increase= pd.DataFrame(absolute_increase, columns=['abs. increase'])
+
 
 st.header('Top 20 countries with highest daily increase in '+ selected_feature.lower())
 st.write(day_before_most_recent.strftime("%B %d, %Y") + ' - ' + most_recent.strftime("%B %d, %Y"))
-st.write('By country ranked in decreasing order.')
+st.write('Ranked in decreasing order.')
 st.write("""***""")
 
 left_column, right_column = st.beta_columns(2)
@@ -107,8 +96,3 @@ left_column.table(percent_increase)
 right_column.write('Absolute increase from ' + day_before_most_recent.strftime("%B %d, %Y") + ' - ' + most_recent.strftime("%B %d, %Y"))
 right_column.table(absolute_increase)
 
-
-st.header("""TODO: Additional column in abs increase table that shows red arrow showing just how much new cases increased for that country for the prior day. 
-Also a metric showing the country's previous rank.""")
-
-st.write('↓')
