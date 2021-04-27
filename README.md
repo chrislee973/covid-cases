@@ -1,3 +1,3 @@
 # Covid Cases
 
-Real time dashboard showing current and historical Covid cases in each country. 
+Real time global map showing current and historical Covid cases in each country. 
