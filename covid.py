@@ -84,15 +84,16 @@ percent_increase, absolute_increase = daily_increase(df_pivot, most_recent, day_
 
 
 st.header('Top 20 countries with highest daily increase in '+ selected_feature.lower())
-st.write(day_before_most_recent.strftime("%B %d, %Y") + ' - ' + most_recent.strftime("%B %d, %Y"))
+st.write(most_recent.strftime("%B %d, %Y"))
 st.write('Ranked in decreasing order.')
 st.write("""***""")
 
 left_column, right_column = st.beta_columns(2)
 
-left_column.write('% increase from ' +  day_before_most_recent.strftime("%B %d, %Y") + ' - ' + most_recent.strftime("%B %d, %Y"))
+left_column.write('% increase from prior day')
 left_column.table(percent_increase)
 
-right_column.write('Absolute increase from ' + day_before_most_recent.strftime("%B %d, %Y") + ' - ' + most_recent.strftime("%B %d, %Y"))
+# right_column.write('Absolute increase from ' + day_before_most_recent.strftime("%B %d, %Y") + ' - ' + most_recent.strftime("%B %d, %Y"))
+right_column.write('Absolute increase from prior day')
 right_column.table(absolute_increase)
 
