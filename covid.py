@@ -64,6 +64,7 @@ fig = plotly_choropleth(df, selected_date, selected_feature=feature_map.get(sele
                         )
 st.plotly_chart(fig, use_container_width=True)
 
+st.write("""***""")
 
 # DAILY INCREASES TABLES
 @st.cache
@@ -91,6 +92,7 @@ percent_increase, absolute_increase = daily_increase(df_pivot, most_recent, day_
 st.header('Top 20 countries with highest daily increase in '+ selected_feature.lower())
 st.write(most_recent.strftime("%B %d, %Y"))
 st.write('Ranked in decreasing order.')
+
 st.write("""***""")
 
 left_column, right_column = st.beta_columns(2)
@@ -101,6 +103,7 @@ left_column.table(percent_increase)
 right_column.write('Absolute increase from prior day')
 right_column.table(absolute_increase)
 
+st.write("""***""")
 
 # HIGHEST TOTAL CASES TABLE
 st.header("Countries with the highest total cases")
@@ -108,4 +111,4 @@ st.write('As of ' + most_recent.strftime("%B %d, %Y"))
 total_cases = pivot(df, 'Total Cases')
 most_cases = pd.DataFrame(total_cases[most_recent].sort_values(ascending=False)).head(20)
 most_cases.rename(columns = {most_cases.columns[0]: 'Total Cases'}, inplace=True)
-st.table(most_cases)
+st.table(most_cases.style.format("{:,}"))
