@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import json
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 import streamlit.components.v1 as components
 import streamlit as st
@@ -12,8 +12,12 @@ st.set_page_config(layout="wide")
 from utils import *
 
 
+# READ MOST RECENT DATA
+# yesterday's date is used to read in new data and send it to cache, since the most recent date with data available is the day before the present day
+yesterday = date.today() - timedelta(1)
+
 @st.cache
-def read_data():
+def read_data(yesterday):
     df = pd.read_csv('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv', 
                         parse_dates=['date'], 
                         )
@@ -22,10 +26,17 @@ def read_data():
                 | (df['location'] =='World') | (df['location'] =='European Union')].index
     df= df.drop(drop_idx)
     return df
+df = read_data(yesterday)
 
-df = read_data()
+
+# HEADING
+st.title("Covid-19 Global Cases")
+st.subheader("""A daily-updated interactive dashboard of new cases on a country by country basis. Data sourced from Our World in Data.""")
+st.write("Use the panel on the left to select the metric you'd like to see, as well as a date you'd like to see data for (the most recent date the data contains is selected by default).")
+"""***"""
 
 
+# SIDEBAR 
 selected_feature = st.sidebar.selectbox('What metric would you like to see?', 
                                     ['New cases','New cases per capita', 'New cases (7 day rolling average)', 'New cases per capita (7 day rolling average)'])
 
@@ -35,12 +46,6 @@ feature_map = {'New cases': 'new_cases',
                 'New cases per capita (7 day rolling average)': 'new_cases_smoothed_per_million', 
                 'Total Cases': 'total_cases'}
 
-
-st.title("Covid-19 Global Cases")
-st.subheader("""A daily-updated interactive dashboard of new cases on a country by country basis. Data sourced from Our World in Data.""")
-st.write("Use the panel on the left to select the metric you'd like to see, as well as a date you'd like to see data for (the most recent date the data contains is selected by default).")
-"""***"""
-#Get the most recent date in the dataset and the very first day in the dataset
 most_recent = sorted(set(df.date), reverse=True)[0]#.strftime("%B %d, %Y")
 day_before_most_recent = sorted(set(df.date), reverse=True)[1]
 first_date = sorted(set(df.date))[0]
@@ -54,13 +59,13 @@ selected_date = st.sidebar.slider(label="Choose date to display data",
                         format="MM/DD/YY")
 
 
+# CHOROPLETH
 fig = plotly_choropleth(df, selected_date, selected_feature=feature_map.get(selected_feature, ''), 
                         )
 st.plotly_chart(fig, use_container_width=True)
 
 
-# Daily increases section
-
+# DAILY INCREASES TABLES
 @st.cache
 def pivot(df, feature):
     df = df.pivot(index=['location'], 
@@ -78,7 +83,6 @@ def daily_increase(df_pivot, most_recent, day_before_most_recent):
 
     percent_increase = pd.DataFrame(percent_increase[percent_increase != 100], columns=['% increase']).head(20)
     absolute_increase= pd.DataFrame(absolute_increase, columns=['abs. increase']).head(20)
-    #return percent_increase[percent_increase != 1].sort_values(ascending=False).head(20), absolute_increase.sort_values(ascending=False).head(20)
     return percent_increase, absolute_increase
 
 percent_increase, absolute_increase = daily_increase(df_pivot, most_recent, day_before_most_recent)
@@ -94,11 +98,11 @@ left_column, right_column = st.beta_columns(2)
 left_column.write('% increase from prior day')
 left_column.table(percent_increase)
 
-# right_column.write('Absolute increase from ' + day_before_most_recent.strftime("%B %d, %Y") + ' - ' + most_recent.strftime("%B %d, %Y"))
 right_column.write('Absolute increase from prior day')
 right_column.table(absolute_increase)
 
-# Most total cases section
+
+# HIGHEST TOTAL CASES TABLE
 st.header("Countries with the highest total cases")
 st.write('As of ' + most_recent.strftime("%B %d, %Y"))
 total_cases = pivot(df, 'Total Cases')
