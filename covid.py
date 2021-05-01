@@ -32,12 +32,13 @@ selected_feature = st.sidebar.selectbox('What metric would you like to see?',
 feature_map = {'New cases': 'new_cases', 
                 'New cases per capita': 'new_cases_per_million', 
                 'New cases (7 day rolling average)': 'new_cases_smoothed', 
-                'New cases per capita (7 day rolling average)': 'new_cases_smoothed_per_million'}
+                'New cases per capita (7 day rolling average)': 'new_cases_smoothed_per_million', 
+                'Total Cases': 'total_cases'}
 
 
 st.title("Covid-19 Global Cases")
 st.subheader("""A daily-updated interactive dashboard of new cases on a country by country basis. Data sourced from Our World in Data.""")
-st.write("Use the panel on the left to select the metric you'd like to see, as well as a date range you're interested in.")
+st.write("Use the panel on the left to select the metric you'd like to see, as well as a date you'd like to see data for (the most recent date the data contains is selected by default).")
 """***"""
 #Get the most recent date in the dataset and the very first day in the dataset
 most_recent = sorted(set(df.date), reverse=True)[0]#.strftime("%B %d, %Y")
@@ -46,14 +47,14 @@ first_date = sorted(set(df.date))[0]
 
 st.sidebar.write("""***""")
 
-date = st.sidebar.slider(label="Choose date to display data", 
+selected_date = st.sidebar.slider(label="Choose date to display data", 
                         value=most_recent, 
                         min_value = first_date, 
                         max_value = most_recent,  
                         format="MM/DD/YY")
 
 
-fig = plotly_choropleth(df, date, selected_feature=feature_map.get(selected_feature, ''), 
+fig = plotly_choropleth(df, selected_date, selected_feature=feature_map.get(selected_feature, ''), 
                         )
 st.plotly_chart(fig, use_container_width=True)
 
@@ -64,7 +65,7 @@ st.plotly_chart(fig, use_container_width=True)
 def pivot(df, feature):
     df = df.pivot(index=['location'], 
                 columns='date', 
-                values= feature_map.get(selected_feature, ''))
+                values= feature_map.get(feature, ''))
     return df
 
 df_pivot = pivot(df, selected_feature)
@@ -97,3 +98,10 @@ left_column.table(percent_increase)
 right_column.write('Absolute increase from prior day')
 right_column.table(absolute_increase)
 
+# Most total cases section
+st.header("Countries with the highest total cases")
+st.write('As of ' + most_recent.strftime("%B %d, %Y"))
+total_cases = pivot(df, 'Total Cases')
+most_cases = pd.DataFrame(total_cases[most_recent].sort_values(ascending=False)).head(20)
+most_cases.rename(columns = {most_cases.columns[0]: 'Total Cases'}, inplace=True)
+st.table(most_cases)

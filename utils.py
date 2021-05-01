@@ -73,7 +73,7 @@ def plotly_choropleth(df, date, selected_feature = 'new_cases'):
   fig.update_layout(
       title_text = '<b>' + map_title.get(selected_feature, '') + '</b>' + 
                    '<br>' +
-                   '<i>' + 'As of ' + date + '</i>'  + '<br>' + '(hover over country for the exact number of the selected metric)',
+                   '<i>' + date + '</i>'  + '<br>' + '(hover over country for the exact number of the selected metric)',
       width = 900,
       height=700, 
       )
