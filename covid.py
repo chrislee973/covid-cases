@@ -46,8 +46,10 @@ feature_map = {'New cases': 'new_cases',
                 'New cases per capita (7 day rolling average)': 'new_cases_smoothed_per_million', 
                 'Total Cases': 'total_cases'}
 
-most_recent = sorted(set(df.date), reverse=True)[0]#.strftime("%B %d, %Y")
-day_before_most_recent = sorted(set(df.date), reverse=True)[1]
+# most_recent = sorted(set(df.date), reverse=True)[0]#.strftime("%B %d, %Y")
+most_recent=yesterday
+day_before_most_recent = yesterday - timedelta(1)
+# day_before_most_recent = sorted(set(df.date), reverse=True)[1]
 first_date = sorted(set(df.date))[0]
 
 st.sidebar.write("""***""")
