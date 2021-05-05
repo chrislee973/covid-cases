@@ -13,7 +13,7 @@ from utils import *
 
 
 # READ MOST RECENT DATA
-# yesterday's date is used to read in new data and send it to cache, since the most recent date with data available is the day before the present day
+# Yesterday's date is used to read in new data and send it to cache, since the most recent date with data available is the day before the present day
 yesterday = date.today() - timedelta(1)
 
 @st.cache
