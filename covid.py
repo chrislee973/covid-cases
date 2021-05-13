@@ -54,9 +54,9 @@ first_date = sorted(set(df.date))[0]
 st.sidebar.write("""***""")
 
 selected_date = st.sidebar.slider(label="Choose date to display data", 
-                        value=date.today() - timedelta(1), #most_recent, 
+                        value=most_recent, 
                         min_value = first_date, 
-                        max_value = date.today() - timedelta(1), #most_recent,  
+                        max_value = most_recent,  
                         format="MM/DD/YY")
 
 
@@ -113,10 +113,3 @@ total_cases = pivot(df, 'Total Cases')
 most_cases = pd.DataFrame(total_cases[most_recent].sort_values(ascending=False)).head(20)
 most_cases.rename(columns = {most_cases.columns[0]: 'Total Cases'}, inplace=True)
 st.table(most_cases.style.format("{:,}"))
-
-
-st.sidebar.slider(label="TESTING", 
-                        value=date.today() - timedelta(1), 
-                        min_value = date.today() - timedelta(5), 
-                        max_value = date.today(),  
-                        format="MM/DD/YY")
