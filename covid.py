@@ -48,16 +48,14 @@ feature_map = {'New cases': 'new_cases',
 
 # most_recent = sorted(set(df.date), reverse=True)[0]#.strftime("%B %d, %Y")
 most_recent=yesterday
-day_before_most_recent = yesterday - timedelta(1)
-# day_before_most_recent = sorted(set(df.date), reverse=True)[1]
 first_date = sorted(set(df.date))[0]
 
 st.sidebar.write("""***""")
 
 selected_date = st.sidebar.slider(label="Choose date to display data", 
-                        value=date.today(), #most_recent, 
+                        value=most_recent, 
                         min_value = first_date, 
-                        max_value = date.today(), #most_recent,  
+                        max_value = most_recent,  
                         format="MM/DD/YY")
 
 
