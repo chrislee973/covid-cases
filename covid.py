@@ -55,9 +55,9 @@ first_date = sorted(set(df.date))[0]
 st.sidebar.write("""***""")
 
 selected_date = st.sidebar.slider(label="Choose date to display data", 
-                        value=most_recent, 
+                        value=date.today(), #most_recent, 
                         min_value = first_date, 
-                        max_value = most_recent,  
+                        max_value = date.today(), #most_recent,  
                         format="MM/DD/YY")
 
 
