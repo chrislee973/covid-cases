@@ -41,6 +41,24 @@ def convertCountryLabels(df):
               })
   return df
 
+@st.cache
+def pivot(df, feature, feature_map):
+    df = df.pivot(index=['location'], 
+                columns='date', 
+                values= feature_map.get(feature, ''))
+    return df
+
+@st.cache
+def daily_increase(df_pivot, most_recent, day_before_most_recent):
+    """Calculates the increase of the selected feature between the most recent day and the day before that."""
+    percent_increase = round(((df_pivot[most_recent] - df_pivot[day_before_most_recent]) / df_pivot[most_recent])*100).sort_values(ascending=False)
+    absolute_increase = round(df_pivot[most_recent] - df_pivot[day_before_most_recent]).sort_values(ascending=False)
+
+    percent_increase = pd.DataFrame(percent_increase[percent_increase != 100], columns=['% increase']).head(20)
+    absolute_increase= pd.DataFrame(absolute_increase, columns=['abs. increase']).head(20)
+    return percent_increase, absolute_increase
+
+    
 #--------- MAPPING
 map_title = { 'new_cases': 'New cases',
               'new_cases_per_million': 'New cases per million people',

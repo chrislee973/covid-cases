@@ -45,7 +45,8 @@ feature_map = {'New cases': 'new_cases',
                 'New cases per capita': 'new_cases_per_million', 
                 'New cases (7 day rolling average)': 'new_cases_smoothed', 
                 'New cases per capita (7 day rolling average)': 'new_cases_smoothed_per_million', 
-                'Total Cases': 'total_cases'}
+                'Total Cases': 'total_cases', 
+                'Total cases per capita': 'total_cases_per_million'}
 
 # most_recent = sorted(set(df.date), reverse=True)[0]#.strftime("%B %d, %Y")
 most_recent=yesterday
@@ -69,40 +70,22 @@ st.plotly_chart(fig, use_container_width=True)
 st.write("""***""")
 
 # DAILY INCREASES TABLES
-@st.cache
-def pivot(df, feature):
-    df = df.pivot(index=['location'], 
-                columns='date', 
-                values= feature_map.get(feature, ''))
-    return df
 
-df_pivot = pivot(df, selected_feature)
-
-@st.cache
-def daily_increase(df_pivot, most_recent, day_before_most_recent):
-    """Calculates the increase of the selected feature between the most recent day and the day before that."""
-    percent_increase = round(((df_pivot[most_recent] - df_pivot[day_before_most_recent]) / df_pivot[most_recent])*100).sort_values(ascending=False)
-    absolute_increase = round(df_pivot[most_recent] - df_pivot[day_before_most_recent]).sort_values(ascending=False)
-
-    percent_increase = pd.DataFrame(percent_increase[percent_increase != 100], columns=['% increase']).head(20)
-    absolute_increase= pd.DataFrame(absolute_increase, columns=['abs. increase']).head(20)
-    return percent_increase, absolute_increase
-
+df_pivot = pivot(df, selected_feature, feature_map)
 percent_increase, absolute_increase = daily_increase(df_pivot, most_recent, day_before_most_recent)
 
-
 st.header('Top 20 countries with highest daily increase in '+ selected_feature.lower())
-st.write(most_recent.strftime("%B %d, %Y"))
+st.write(f'From {day_before_most_recent.strftime("%B %d, %Y")} - {most_recent.strftime("%B %d, %Y")}')
 st.write('Ranked in decreasing order.')
 
 st.write("""***""")
 
 left_column, right_column = st.beta_columns(2)
 
-left_column.write('% increase from prior day')
+left_column.write('% increase')
 left_column.table(percent_increase)
 
-right_column.write('Absolute increase from prior day')
+right_column.write('Absolute increase')
 right_column.table(absolute_increase)
 
 st.write("""***""")
@@ -110,7 +93,13 @@ st.write("""***""")
 # HIGHEST TOTAL CASES TABLE
 st.header("Countries with the highest total cases")
 st.write('As of ' + most_recent.strftime("%B %d, %Y"))
-total_cases = pivot(df, 'Total Cases')
+per_capita = st.checkbox('View per-capita')
+if per_capita:
+    total_cases = pivot(df, 'Total cases per capita', feature_map)
+    column_name = 'Total cases per capita'
+else:
+    total_cases = pivot(df, 'Total Cases', feature_map)
+    column_name = 'Total cases'
 most_cases = pd.DataFrame(total_cases[most_recent].sort_values(ascending=False)).head(20)
-most_cases.rename(columns = {most_cases.columns[0]: 'Total Cases'}, inplace=True)
+most_cases.rename(columns = {most_cases.columns[0]: column_name}, inplace=True)
 st.table(most_cases.style.format("{:,}"))
