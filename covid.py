@@ -38,7 +38,7 @@ st.write("Use the panel on the left to select the metric you'd like to see, as w
 
 
 # SIDEBAR 
-selected_feature = st.sidebar.selectbox('What metric would you like to see?', 
+selected_feature = st.sidebar.selectbox('What metric would you like to view data for?', 
                                     ['New cases','New cases per capita', 'New cases (7 day rolling average)', 'New cases per capita (7 day rolling average)'])
 
 feature_map = {'New cases': 'new_cases', 
