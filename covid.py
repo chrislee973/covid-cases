@@ -45,7 +45,7 @@ feature_map = {'New cases': 'new_cases',
                 'New cases per capita': 'new_cases_per_million', 
                 'New cases (7 day rolling average)': 'new_cases_smoothed', 
                 'New cases per capita (7 day rolling average)': 'new_cases_smoothed_per_million', 
-                'Total Cases': 'total_cases', 
+                'Total cases': 'total_cases', 
                 'Total cases per capita': 'total_cases_per_million'}
 
 # most_recent = sorted(set(df.date), reverse=True)[0]#.strftime("%B %d, %Y")
@@ -95,11 +95,11 @@ st.header("Countries with the highest total cases")
 st.write('As of ' + most_recent.strftime("%B %d, %Y"))
 per_capita = st.checkbox('View per-capita')
 if per_capita:
-    total_cases = pivot(df, 'Total cases per capita', feature_map)
-    column_name = 'Total cases per capita'
+    feature_name = 'Total cases per capita'
 else:
-    total_cases = pivot(df, 'Total Cases', feature_map)
-    column_name = 'Total cases'
+    feature_name = 'Total cases'
+
+total_cases = pivot(df, feature_name, feature_map)
 most_cases = pd.DataFrame(total_cases[most_recent].sort_values(ascending=False)).head(20)
-most_cases.rename(columns = {most_cases.columns[0]: column_name}, inplace=True)
+most_cases.rename(columns = {most_cases.columns[0]: feature_name}, inplace=True)
 st.table(most_cases.style.format("{:,}"))
