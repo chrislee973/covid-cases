@@ -58,7 +58,7 @@ st.sidebar.write("""***""")
 selected_date = st.sidebar.slider(label="Choose date to display data", 
                         value=most_recent, 
                         min_value = first_date, 
-                        max_value = most_recent,  
+                        max_value = date.today(),  
                         format="MM/DD/YY")
 
 
