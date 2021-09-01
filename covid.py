@@ -80,7 +80,7 @@ st.write('Ranked in decreasing order.')
 
 st.write("""***""")
 
-left_column, right_column = st.beta_columns(2)
+left_column, right_column = st.columns(2)
 
 left_column.write('% increase')
 left_column.table(percent_increase)
