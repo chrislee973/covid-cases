@@ -55,15 +55,17 @@ first_date = sorted(set(df.date))[0]
 
 st.sidebar.write("""***""")
 
-selected_date = st.sidebar.slider(label="Choose date to display data", 
-                        value=most_recent, 
-                        min_value = first_date, 
-                        max_value = date.today(),  
-                        format="MM/DD/YY")
+# selected_date = st.sidebar.slider(label="Choose date to display data", 
+#                         value=most_recent, 
+#                         min_value = first_date, 
+#                         max_value = date.today(),  
+#                         format="MM/DD/YY")
 
+# date_input = st.sidebar.date_input('Choose date to display data', date(2011,1,1))
+date_input = st.sidebar.date_input('Choose date to display data', most_recent, min_value=first_date, max_value=most_recent)
 
 # CHOROPLETH
-fig = plotly_choropleth(df, selected_date, selected_feature=feature_map.get(selected_feature, ''), 
+fig = plotly_choropleth(df, date_input, selected_feature=feature_map.get(selected_feature, ''), 
                         )
 st.plotly_chart(fig, use_container_width=True)
 
