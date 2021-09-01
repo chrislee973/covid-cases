@@ -33,7 +33,7 @@ df = read_data(yesterday)
 st.title("Covid-19 Global Cases")
 st.write("By Christopher Lee")
 st.subheader("""A daily-updated interactive dashboard of new cases on a country by country basis. Data sourced from Our World in Data.""")
-st.write("Use the panel on the left to select the metric you'd like to see, as well as a date you'd like to see data for (the most recent date the data contains is selected by default).")
+st.write("Use the side-panel on the left to select the metric you'd like to see as well as the date you'd like to view data for (the date with the latest avaialble data is selected by default).")
 """***"""
 
 
