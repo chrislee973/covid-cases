@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import json
 from datetime import date, datetime, timedelta
+import pytz
 
 import streamlit.components.v1 as components
 import streamlit as st
@@ -14,7 +15,9 @@ from utils import *
 
 # READ MOST RECENT DATA
 # Yesterday's date is used to read in new data and send it to cache, since the most recent date with data available is the day before the present day
-yesterday = date.today() - timedelta(1)
+# yesterday = date.today() - timedelta(1)
+tz = pytz.timezone('US/Pacific')
+yesterday = datetime.now(tz).date() - timedelta(1)
 
 @st.cache
 def read_data(yesterday):
