@@ -2,9 +2,11 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import json
+from plotly.graph_objs.layout import xaxis
 
 import streamlit as st
 import plotly.graph_objects as go
+import plotly.express as px
 
 
 
@@ -69,7 +71,7 @@ map_colorbar_title = {'new_cases_smoothed': 'New cases',
                       'new_cases_smoothed_per_million': 'New cases'}
 
 @st.cache
-def plotly_choropleth(df, date, selected_feature = 'new_cases'):
+def plotly_choropleth(df, date , selected_feature = 'new_cases'):
   #Get the subset of the dataset matching the user-provided date
   df = df[df.date == date]
 
@@ -88,8 +90,22 @@ def plotly_choropleth(df, date, selected_feature = 'new_cases'):
       title_text = '<b>' + map_title.get(selected_feature, '') + '</b>' + 
                    '<br>' +
                    '<i>' + date + '</i>'  + '<br>' + '(hover over country for the exact number of the selected metric)',
-      width = 900,
-      height=700, 
+      width = 120,
+      height=800, 
       )
   return fig
 
+
+@st.cache
+def plotly_bargraph(df, date, date_before_most_recent, selected_feature, option = "% increase"):
+  # fig = go.Figure([go.Bar(x=df.index, y=df[option], hovertext='{:.2%}'.format(list(df[option])))])
+  df = df.reset_index().rename(columns={"index": "Country"})
+  fig = px.bar(df, x="location", y=option, labels={'location': 'Country'})
+  # fig = go.Figure([go.Bar(x=df.index, y=df[option], hovertext=["{:.0%}".format(x/100) for x in df[option]])])
+  fig.update_layout(
+    # font=dict(
+    #     family="Roboto, monospace",
+    #     size=12,
+    # ),
+yaxis_title = f"{option} in {selected_feature.lower()}", title_text = f"<b>Countries with highest daily increase in {selected_feature.lower()}</b> ({option})" + "<br>" + f'<i>From {date_before_most_recent.strftime("%B %d, %Y")} - {date.strftime("%B %d, %Y")}</i>', xaxis_tickangle=-45)
+  return fig

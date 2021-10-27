@@ -35,14 +35,14 @@ df = read_data(yesterday)
 # HEADING
 st.title("Covid-19 Global Cases")
 st.write("By Christopher Lee")
-st.subheader("""A daily-updated interactive dashboard of new cases on a country by country basis. Data sourced from Our World in Data.""")
-st.write("Use the side-panel on the left to select the metric you'd like to see as well as the date you'd like to view data for (the date with the latest avaialble data is selected by default).")
+st.subheader("""A global dashboard of daily new cases and other related metrics using data sourced from Our World in Data.""")
+st.write("Use the side-panel on the left to select the metric you'd like to see as well as the date you'd like to view data for (the date with the latest available data is selected by default).")
 """***"""
 
 
 # SIDEBAR 
-selected_feature = st.sidebar.selectbox('What metric would you like to view data for?', 
-                                    ['New cases','New cases per capita', 'New cases (7 day rolling average)', 'New cases per capita (7 day rolling average)'])
+# selected_feature = st.sidebar.selectbox('What metric would you like to view data for?', 
+#                                     ['New cases','New cases per capita', 'New cases (7 day rolling average)', 'New cases per capita (7 day rolling average)'])
 
 feature_map = {'New cases': 'new_cases', 
                 'New cases per capita': 'new_cases_per_million', 
@@ -56,38 +56,62 @@ most_recent=yesterday
 day_before_most_recent = yesterday - timedelta(1)
 first_date = sorted(set(df.date))[0]
 
-st.sidebar.write("""***""")
+selected_feature_COLUMN, date_input_COLUMN = st.columns(2)
+with selected_feature_COLUMN:
+    selected_feature = st.selectbox('Metric', 
+                                    ['New cases','New cases per capita', 'New cases (7 day rolling average)', 'New cases per capita (7 day rolling average)'])
+# date_input = st.sidebar.date_input('Choose date to display data', most_recent, min_value=first_date, max_value=most_recent)
+with date_input_COLUMN:
+    date_input = st.date_input(f'Choose date to display data(most recent date is {most_recent.strftime("%m/%d/%Y")})', most_recent, min_value=first_date, max_value=most_recent)
 
-date_input = st.sidebar.date_input('Choose date to display data', most_recent, min_value=first_date, max_value=most_recent)
+col1, col2 = st.columns([8,1])
 
 # CHOROPLETH
 fig = plotly_choropleth(df, date_input, selected_feature=feature_map.get(selected_feature, ''), 
                         )
-st.plotly_chart(fig, use_container_width=True)
+with col1:
+    st.plotly_chart(fig, use_container_width=True)    
 
 st.write("""***""")
 
-# DAILY INCREASES TABLES
-
+# DAILY INCREASES CHART
+st.header(f"Countries with highest daily increase in {selected_feature.lower()}")
 df_pivot = pivot(df, selected_feature, feature_map)
 percent_increase, absolute_increase = daily_increase(df_pivot, most_recent, day_before_most_recent)
+# with col2:
+#     col2.subheader('Top 20 countries with highest daily increase in '+ selected_feature.lower())
+#     option = st.selectbox("select option", ["% increase", "absolute increase"])
+#     if option == "% increase":
+#         # st.table(percent_increase)
+#         st.bar_chart(percent_increase, use_container_width=False)
+#     elif option == "absolute increase":
+#         st.table(absolute_increase)
+#     st.bar_chart(absolute_increase, use_container_width=False)
+chart1, chart2 = st.columns(2)
+with chart1:
+    percent_chart = plotly_bargraph(percent_increase, most_recent, day_before_most_recent, selected_feature = selected_feature, option = "% increase")
+    st.plotly_chart(percent_chart)
+with chart2:
+    abs_chart = plotly_bargraph(absolute_increase, most_recent, day_before_most_recent, selected_feature = selected_feature, option = "abs. increase")
+    st.plotly_chart(abs_chart)
 
-st.header('Top 20 countries with highest daily increase in '+ selected_feature.lower())
-st.write(f'From {day_before_most_recent.strftime("%B %d, %Y")} - {most_recent.strftime("%B %d, %Y")}')
-st.write('Ranked in decreasing order.')
+# st.write("""***""")
+
+# st.header('Top 20 countries with highest daily increase in '+ selected_feature.lower())
+# st.write(f'From {day_before_most_recent.strftime("%B %d, %Y")} - {most_recent.strftime("%B %d, %Y")}')
+# st.write('Ranked in decreasing order.')
+
+# st.write("""***""")
+
+# percent_increase_COLUMN, abs_increase_COLUMN = st.columns(2)
+
+# percent_increase_COLUMN.write('% increase')
+# percent_increase_COLUMN.table(percent_increase)
+
+# abs_increase_COLUMN.write('Absolute increase')
+# abs_increase_COLUMN.table(absolute_increase)
 
 st.write("""***""")
-
-left_column, right_column = st.columns(2)
-
-left_column.write('% increase')
-left_column.table(percent_increase)
-
-right_column.write('Absolute increase')
-right_column.table(absolute_increase)
-
-st.write("""***""")
-
 # HIGHEST TOTAL CASES TABLE
 st.header("Countries with the highest total cases")
 st.write('As of ' + most_recent.strftime("%B %d, %Y"))
